@@ -15,7 +15,7 @@ class Uinstruction():
             _schematic_name, attr, shift, invert = scan_chain[n & 7][n >> 3]
             bit = (self.uword >> down_shift) & 1
             val = getattr(self, attr, 0)
-            val |= (bit << shift) ^ invert
+            val |= (bit ^ invert) << shift
             setattr(self, attr, val)
             i.add(attr)
             if attr[:5] == "zero_" and val:
