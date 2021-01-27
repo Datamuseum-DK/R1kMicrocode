@@ -49,7 +49,7 @@ class Typ(uengine.UcodeEngine):
     def __init__(self, up, uload):
         super().__init__(
             up,
-            "FIU_OR_TYP2",
+            "TYP",
             14,
             diag_chains.TYP_WRITE_DATA_REGISTER
         )

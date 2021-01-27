@@ -54,11 +54,11 @@ class UCodeFile():
         self.decode_low = UCodeSection(self.octets[0x6400:0x8400], 8)
         self.decode_high = UCodeSection(self.octets[0x8400:0xa400], 8)
 
-        self.fiu = UCodeSection(self.octets[0xa400:], 8, stride=32, offset=0, load_adr=LOAD_ADR)
+        self.typ = UCodeSection(self.octets[0xa400:], 8, stride=32, offset=0, load_adr=LOAD_ADR)
 
         # This makes VAL.alu_func look right in 0x027x instructions
         self.val = UCodeSection(self.octets[0xa400:], 8, stride=32, offset=8, load_adr=LOAD_ADR)
 
-        self.typ = UCodeSection(self.octets[0xa400:], 8, stride=32, offset=16, load_adr=LOAD_ADR)
+        self.fiu = UCodeSection(self.octets[0xa400:], 8, stride=32, offset=16, load_adr=LOAD_ADR)
 
         self.seq = UCodeSection(self.octets[0xa400:], 8, stride=32, offset=24, load_adr=LOAD_ADR)

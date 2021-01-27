@@ -10,7 +10,7 @@ class Fiu(uengine.UcodeEngine):
     def __init__(self, up, uload):
         super().__init__(
             up,
-            "FIU_OR_TYP1",
+            "FIU",
             14,
             diag_chains.FIU_MICRO_INSTRUCTION_REGISTER
         )
