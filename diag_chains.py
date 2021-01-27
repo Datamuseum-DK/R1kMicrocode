@@ -522,41 +522,29 @@ TYP_WRITE_DATA_REGISTER = [
 
 VAL_WRITE_DATA_REGISTER = [
     [
-        ("", 'x00', 0, 0),
-        ("", 'x01', 0, 0),
-        ("", 'x02', 0, 0),
-        ("", 'x03', 0, 0),
-        ("", 'x04', 0, 0),
-        ("", 'x05', 0, 0),
-        ("", 'x06', 0, 0),
-        ("", 'x07', 0, 0),
         # DIAG.D8 = K27 + K30 @ p66
-        #("UIR.A0", 'a', 5, 0),
-        #("UIR.A1", 'a', 4, 0),
-        #("UIR.A2", 'a', 3, 0),
-        #("UIR.A3", 'a', 2, 0),
-        #("UIR.A4", 'a', 1, 0),
-        #("UIR.A5", 'a', 0, 0),
-        #("UIR.B0", 'b', 4, 0),
-        #("UIR.B1", 'b', 5, 0),
+        # Inverted because DIAG.D8 is non-inverted input
+        # to inverting mux K27
+        ("UIR.B1", 'b_adr', 4, 1),
+        ("UIR.B0", 'b_adr', 5, 1),
+        ("UIR.A5", 'a_adr', 0, 1),
+        ("UIR.A4", 'a_adr', 1, 1),
+        ("UIR.A3", 'a_adr', 2, 1),
+        ("UIR.A2", 'a_adr', 3, 1),
+        ("UIR.A1", 'a_adr', 4, 1),
+        ("UIR.A0", 'a_adr', 5, 1),
     ], [
-        ("", 'x10', 0, 0),
-        ("", 'x11', 0, 0),
-        ("", 'x12', 0, 0),
-        ("", 'x13', 0, 0),
-        ("", 'x14', 0, 0),
-        ("", 'x15', 0, 0),
-        ("", 'x16', 0, 0),
-        ("", 'x17', 0, 0),
         # DIAG.D9 = K33 + K36 @ p66
-        #("UIR.B2", 'b', 3, 0),
-        #("UIR.B3", 'b', 2, 0),
-        #("UIR.B4", 'b', 1, 0),
-        #("UIR.B5", 'b', 0, 0),
-        #("FRAME.0", 'frame', 4, 0),
-        #("FRAME.1", 'frame', 3, 0),
-        #("FRAME.2", 'frame', 2, 0),
-        #("FRAME.3", 'frame', 1, 0),
+        # Inverted because DIAG.D9 is non-inverted input
+        # to inverting mux K33
+        ("FRAME.3", 'frame', 1, 1),
+        ("FRAME.2", 'frame', 2, 1),
+        ("FRAME.1", 'frame', 3, 1),
+        ("FRAME.0", 'frame', 4, 1),
+        ("UIR.B5", 'b_adr', 0, 1),
+        ("UIR.B4", 'b_adr', 1, 1),
+        ("UIR.B3", 'b_adr', 2, 1),
+        ("UIR.B2", 'b_adr', 3, 1),
     ], [
         ("", 'x20', 0, 0),
         ("", 'x21', 0, 0),
