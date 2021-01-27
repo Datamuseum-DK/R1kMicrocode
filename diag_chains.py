@@ -199,6 +199,24 @@ SEQ_UIR_SCAN_CHAIN = [
 
 #######################################################################
 # https://datamuseum.dk/bits/30000957 R1000_SCHEMATIC_FIU.PDF
+# p8:
+#       offs_lit<0:6>       *L-14...L-20
+#       lfl<0:6>            *L21,L6..L11
+#       o_reg_src           *L4
+#       fill_mode_src       *L5
+#       vmux_sel<0:1>       *L24,L25
+#       op_select<0:1>      *L22,L23
+#       lfreg_cntl<0:1>     *L12,L13
+#       ti_vi_source<0:3>   *L35...L38
+#       load_oreg           *L39
+#       load_var            *L41
+#       load_tar            *L40
+#       load_mdr            *L42
+#       mem_start<0:4>      *L28...L32
+#       rdata_bus_src       *L33
+#       parity              *L34
+#       length_source       L26
+#       offset_source       L27
 # p49:
 #	OFFS_LIT<0:6>
 #	LFL<0:6>
@@ -220,105 +238,65 @@ SEQ_UIR_SCAN_CHAIN = [
 #
 FIU_MICRO_INSTRUCTION_REGISTER = [
     [
-        ("", 'x00', 0, 0),
-        ("", 'x01', 0, 0),
-        ("", 'x02', 0, 0),
-        ("", 'x03', 0, 0),
-        ("", 'x04', 0, 0),
-        ("", 'x05', 0, 0),
-        ("", 'x06', 0, 0),
-        ("", 'x07', 0, 0),
         # DIAG.D0 = J18+J19 @p48
-        #("LFL0", "lfl", 6, 0),
-        #("OFFS_LIT6", "offs_lit", 0, 0),
-        #("OFFS_LIT5", "offs_lit", 1, 0),
-        #("OFFS_LIT4", "offs_lit", 2, 0),
-        #("OFFS_LIT3", "offs_lit", 3, 0),
-        #("OFFS_LIT2", "offs_lit", 4, 0),
-        #("OFFS_LIT1", "offs_lit", 5, 0),
-        #("OFFS_LIT0", "offs_lit", 6, 0),
+        ("LFL0", "lfl", 6, 0),
+        ("OFFS_LIT6", "offs_lit", 0, 0),
+        ("OFFS_LIT5", "offs_lit", 1, 0),
+        ("OFFS_LIT4", "offs_lit", 2, 0),
+        ("OFFS_LIT3", "offs_lit", 3, 0),
+        ("OFFS_LIT2", "offs_lit", 4, 0),
+        ("OFFS_LIT1", "offs_lit", 5, 0),
+        ("OFFS_LIT0", "offs_lit", 6, 0),
     ], [
-        ("", 'x10', 0, 0),
-        ("", 'x11', 0, 0),
-        ("", 'x12', 0, 0),
-        ("", 'x13', 0, 0),
-        ("", 'x14', 0, 0),
-        ("", 'x15', 0, 0),
-        ("", 'x16', 0, 0),
-        ("", 'x17', 0, 0),
         # DIAG.D1 = K12+K16 @p48
-        #("LFREG_CNTL1", "lfreg_cntl", 0, 0),
-        #("LFREG_CNTL0", "lfreg_cntl", 1, 0),
-        #("LFL6", "lfl", 0, 0),
-        #("LFL5", "lfl", 1, 0),
-        #("LFL4", "lfl", 2, 0),
-        #("LFL3", "lfl", 3, 0),
-        #("LFL2", "lfl", 4, 0),
-        #("LFL1", "lfl", 5, 0),
+        ("LFREG_CNTL1", "lfreg_cntl", 0, 0),
+        ("LFREG_CNTL0", "lfreg_cntl", 1, 0),
+        ("LFL6", "lfl", 0, 0),
+        ("LFL5", "lfl", 1, 0),
+        ("LFL4", "lfl", 2, 0),
+        ("LFL3", "lfl", 3, 0),
+        ("LFL2", "lfl", 4, 0),
+        ("LFL1", "lfl", 5, 0),
     ], [
-        ("", 'x20', 0, 0),
-        ("", 'x21', 0, 0),
-        ("", 'x22', 0, 0),
-        ("", 'x23', 0, 0),
-        ("", 'x24', 0, 0),
-        ("", 'x25', 0, 0),
-        ("", 'x26', 0, 0),
-        ("", 'x27', 0, 0),
         # DIAG.D2 = H20+M3 @p48
-        #("CHAIN?", "chain", 0, 0),
-        #("XX", "xxd2", 0, 0),
-        #("OREG_SRC", "oreg_src", 0, 0),
-        #("FILL_MODE_SRC", "fill_mode_src", 0, 0),
-        #("VMUX_SEL1", "vmux_sel", 0, 0),
-        #("VMUX_SEL0", "vmux_sel", 1, 0),
-        #("OP_SEL1", "op_sel", 0, 0),
-        #("OP_SEL0", "op_sel", 1, 0),
+        ("CHAIN?", "chain", 0, 0),
+        ("", "zero_2", 2, 0),
+        ("OREG_SRC", "oreg_src", 0, 0),
+        ("FILL_MODE_SRC", "fill_mode_src", 0, 0),
+        ("VMUX_SEL1", "vmux_sel", 0, 0),
+        ("VMUX_SEL0", "vmux_sel", 1, 0),
+        ("OP_SEL1", "op_sel", 0, 0),
+        ("OP_SEL0", "op_sel", 1, 0),
     ], [
-        ("", 'x30', 0, 0),
-        ("", 'x31', 0, 0),
-        ("", 'x32', 0, 0),
-        ("", 'x33', 0, 0),
-        ("", 'x34', 0, 0),
-        ("", 'x35', 0, 0),
-        ("", 'x36', 0, 0),
-        ("", 'x37', 0, 0),
         # DIAG.D3 = K43+K47 @p48
-        #("TIVI_SRC3", "tivi_src", 0, 0),
-        #("TIVI_SRC2", "tivi_src", 1, 0),
-        #("TIVI_SRC1", "tivi_src", 2, 0),
-        #("TIVI_SRC0", "tivi_src", 3, 0),
-        #("LOAD_MDR", "load_mdr", 0, 0),
-        #("LOAD_TAR~", "load_tar", 0, 1),
-        #("LOAD_VAR~", "load_var", 0, 1),
-        #("LOAD_OREG~", "load_oreg", 0, 1),
+        ("LOAD_MDR", "load_mdr", 0, 0),
+        ("LOAD_TAR~", "load_tar", 0, 1),
+        ("LOAD_VAR~", "load_var", 0, 1),
+        ("LOAD_OREG~", "load_oreg", 0, 1),
+        ("TIVI_SRC3", "tivi_src", 0, 0),
+        ("TIVI_SRC2", "tivi_src", 1, 0),
+        ("TIVI_SRC1", "tivi_src", 2, 0),
+        ("TIVI_SRC0", "tivi_src", 3, 0),
     ], [
-        ("", 'x40', 0, 0),
-        ("", 'x41', 0, 0),
-        ("", 'x42', 0, 0),
-        ("", 'x43', 0, 0),
-        ("", 'x44', 0, 0),
-        ("", 'x45', 0, 0),
-        ("", 'x46', 0, 0),
-        ("", 'x47', 0, 0),
         # DIAG.D4 = M35+M39 @p48
-        #("UIR.P", "parity", 0, 0),
-        #("XX", "xxd4", 0, 0),
-        #("RDATA_SRC", "rdata_src", 0, 0),
-        #("MEM_START4", "mem_start", 0, 0),
-        #("MEM_START3", "mem_start", 1, 0),
-        #("MEM_START2", "mem_start", 2, 0),
-        #("MEM_START1", "mem_start", 3, 0),
-        #("MEM_START0", "mem_start", 4, 0),
+        ("UIR.P", "parity", 0, 0),
+        ("XX", "zero_4", 1, 0),
+        ("RDATA_SRC", "rdata_src", 0, 0),
+        ("MEM_START4", "mem_start", 0, 0),
+        ("MEM_START3", "mem_start", 1, 0),
+        ("MEM_START2", "mem_start", 2, 0),
+        ("MEM_START1", "mem_start", 3, 0),
+        ("MEM_START0", "mem_start", 4, 0),
     ], [
-        # DIAG.D5 - unused
-	("", "x50", 0, 0),
-	("", "x51", 0, 0),
-	("", "x52", 0, 0),
-	("", "x53", 0, 0),
-	("", "x54", 0, 0),
-	("", "x55", 0, 0),
-	("", "x56", 0, 0),
-	("", "x57", 0, 0),
+        # DIAG.D5 = K20 + J25 @p48
+	("", "zero_5", 0, 0),
+	("", "zero_5", 1, 0),
+	("", "zero_5", 2, 0),
+	("", "zero_5", 3, 0),
+	("", "zero_5", 4, 0),
+	("", "zero_5", 5, 0),
+	("LENGTH_SRC", "length_src", 0, 0),
+	("OFFS_SRC", "offset_src", 0, 0),
     ], [
         # DIAG.D6 - unused
 	("", "x60", 0, 0),
