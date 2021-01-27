@@ -51,8 +51,7 @@ class Typ(uengine.UcodeEngine):
             up,
             "FIU_OR_TYP2",
             14,
-            #diag_chains.TYP_WRITE_DATA_REGISTER
-            diag_chains.FIU_OR_TYP2
+            diag_chains.TYP_WRITE_DATA_REGISTER
         )
         for n, i in uload:
             self.define_instruction(n, i)

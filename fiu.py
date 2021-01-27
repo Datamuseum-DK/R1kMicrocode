@@ -12,8 +12,7 @@ class Fiu(uengine.UcodeEngine):
             up,
             "FIU_OR_TYP1",
             14,
-            #diag_chains.FIU_MICRO_INSTRUCTION_REGISTER
-            diag_chains.FIU_OR_TYP1
+            diag_chains.FIU_MICRO_INSTRUCTION_REGISTER
         )
         for n, i in uload:
             self.define_instruction(n, i)
