@@ -4,6 +4,12 @@
 '''
 
 #######################################################################
+# Microcode is loaded by the 8051 on each board, by feeding a byte
+# at time to several serial-to-parallel registers.
+# The structures below have 8 lists, one for each bit in the byte
+# each listing the 8 signals appearing on the parallel outputs.
+
+#######################################################################
 # The chain for the Decode RAMs is documented at:
 #     [30000958] R1000_SCHEMATIC_SEQ.PDF p56
 
@@ -357,117 +363,72 @@ FIU_MICRO_INSTRUCTION_REGISTER = [
 #
 TYP_WRITE_DATA_REGISTER = [
     [
-        ("", 'x00', 0, 0),
-        ("", 'x01', 0, 0),
-        ("", 'x02', 0, 0),
-        ("", 'x03', 0, 0),
-        ("", 'x04', 0, 0),
-        ("", 'x05', 0, 0),
-        ("", 'x06', 0, 0),
-        ("", 'x07', 0, 0),
         # DIAG.D8 = K27+K30 @p63
-        #("UIR.B1", "b", 4, 0),
-        #("UIR.B0", "b", 5, 0),
-        #("UIR.A5", "a", 0, 0),
-        #("UIR.A4", "a", 1, 0),
-        #("UIR.A3", "a", 2, 0),
-        #("UIR.A2", "a", 3, 0),
-        #("UIR.A1", "a", 4, 0),
-        #("UIR.A0", "a", 5, 0),
+        # Inverted because DIAG.D8 is non-inverted input
+        # to inverting mux K27
+        ("UIR.B1", "b_adr", 4, 1),
+        ("UIR.B0", "b_adr", 5, 1),
+        ("UIR.A5", "a_adr", 0, 1),
+        ("UIR.A4", "a_adr", 1, 1),
+        ("UIR.A3", "a_adr", 2, 1),
+        ("UIR.A2", "a_adr", 3, 1),
+        ("UIR.A1", "a_adr", 4, 1),
+        ("UIR.A0", "a_adr", 5, 1),
     ], [
-        ("", 'x10', 0, 0),
-        ("", 'x11', 0, 0),
-        ("", 'x12', 0, 0),
-        ("", 'x13', 0, 0),
-        ("", 'x14', 0, 0),
-        ("", 'x15', 0, 0),
-        ("", 'x16', 0, 0),
-        ("", 'x17', 0, 0),
         # DIAG.D9 = K33+K36 @p63
-        #("UIR.FRAME3", "frame", 1, 0),
-        #("UIR.FRAME2", "frame", 2, 0),
-        #("UIR.FRAME1", "frame", 3, 0),
-        #("UIR.FRAME0", "frame", 4, 0),
-        #("UIR.B5", "b", 0, 0),
-        #("UIR.B4", "b", 1, 0),
-        #("UIR.B3", "b", 2, 0),
-        #("UIR.B2", "b", 3, 0),
+        # Inverted because DIAG.D9 is non-inverted input
+        # to inverting mux K30
+        ("UIR.FRAME3", "frame", 1, 1),
+        ("UIR.FRAME2", "frame", 2, 1),
+        ("UIR.FRAME1", "frame", 3, 1),
+        ("UIR.FRAME0", "frame", 4, 1),
+        ("UIR.B5", "b_adr", 0, 1),
+        ("UIR.B4", "b_adr", 1, 1),
+        ("UIR.B3", "b_adr", 2, 1),
+        ("UIR.B2", "b_adr", 3, 1),
     ], [
-        ("", 'x20', 0, 0),
-        ("", 'x21', 0, 0),
-        ("", 'x22', 0, 0),
-        ("", 'x23', 0, 0),
-        ("", 'x24_parity?', 0, 0),
-        ("", 'x25', 0, 0),
-        ("", 'x26', 0, 0),
-        ("", 'x27', 0, 0),
         # DIAG.D10 = K43 @p63 + J17+J16 @ p64
         # Note that pin 2 on J17 says C_LIT~4
         # That must be a mistake for UIR.FRAME4
         # Compare with VAL schematic.
-        #("", 'zero_2', 0, 0),
-        #("UIR.RAND3", 'rand', 0, 0),
-        #("UIR.RAND2", 'rand', 1, 0),
-        #("UIR.RAND1", 'rand', 2, 0),
-        #("UIR.RAND0", 'rand', 3, 0),
-        #("UIR.P", 'parity', 0, 0),
-        #("UIR.C_LIT~1", 'c_lit', 0, 1),
-        #("UIR.C_LIT~0", 'c_lit', 1, 1),
-        #("UIR.FRAME4", "frame", 0, 0),
+        ("UIR.RAND3", 'rand', 0, 0),
+        ("UIR.RAND2", 'rand', 1, 0),
+        ("UIR.RAND1", 'rand', 2, 0),
+        ("UIR.RAND0", 'rand', 3, 0),
+        ("UIR.P", 'parity', 0, 0),
+        ("UIR.C_LIT~1", 'c_lit', 0, 1),
+        ("UIR.C_LIT~0", 'c_lit', 1, 1),
+        ("UIR.FRAME4", "frame", 0, 0),
     ], [
-        ("", 'x30', 0, 0),
-        ("", 'x31', 0, 0),
-        ("", 'x32', 0, 0),
-        ("", 'x33', 0, 0),
-        ("", 'x34', 0, 0),
-        ("", 'x35', 0, 0),
-        ("", 'x36', 0, 0),
-        ("", 'x37', 0, 0),
         # DIAG.D11 = K26+J26 @p64
-        #("UIR.PRIV_CHEK1", 'priv_check', 1, 0),
-        #("UIR.PRIV_CHEK0", 'priv_check', 2, 0),
-        #("UIR.C5", 'c', 0, 0),
-        #("UIR.C4", 'c', 1, 0),
-        #("UIR.C3", 'c', 2, 0),
-        #("UIR.C2", 'c', 3, 0),
-        #("UIR.C1", 'c', 4, 0),
-        #("UIR.C0", 'c', 5, 0),
+        ("UIR.PRIV_CHEK1", 'priv_check', 1, 0),
+        ("UIR.PRIV_CHEK0", 'priv_check', 2, 0),
+        ("UIR.C5", 'c_adr', 0, 0),
+        ("UIR.C4", 'c_adr', 1, 0),
+        ("UIR.C3", 'c_adr', 2, 0),
+        ("UIR.C2", 'c_adr', 3, 0),
+        ("UIR.C1", 'c_adr', 4, 0),
+        ("UIR.C0", 'c_adr', 5, 0),
     ], [
-        ("", 'x40', 0, 0),
-        ("", 'x41', 0, 0),
-        ("", 'x42', 0, 0),
-        ("", 'x43', 0, 0),
-        ("", 'x44', 0, 0),
-        ("", 'x45', 0, 0),
-        ("", 'x46', 0, 0),
-        ("", 'x47', 0, 0),
         # DIAG.D12 = H23+H21 @p64
-        #("UIR.C_SOURCE", 'c_source', 0, 0),
-        #("UIR.ALU_FUNC4", 'alu_func', 0, 0),
-        #("UIR.ALU_FUNC3", 'alu_func', 1, 0),
-        #("UIR.ALU_FUNC2", 'alu_func', 2, 0),
-        #("UIR.ALU_FUNC1", 'alu_func', 3, 0),
-        #("UIR.ALU_FUNC0", 'alu_func', 4, 0),
-        #("C_MUX.SEL", 'c_mux', 0, 0),
-        #("UIR.PRIV.CHEK2", 'priv_check', 0, 0),
+        ("UIR.C_SOURCE", 'c_source', 0, 0),
+        ("UIR.ALU_FUNC4", 'alu_func', 0, 0),
+        ("UIR.ALU_FUNC3", 'alu_func', 1, 0),
+        ("UIR.ALU_FUNC2", 'alu_func', 2, 0),
+        ("UIR.ALU_FUNC1", 'alu_func', 3, 0),
+        ("UIR.ALU_FUNC0", 'alu_func', 4, 0),
+        ("C_MUX.SEL", 'c_mux_sel', 0, 0),
+        ("UIR.PRIV.CHEK2", 'priv_check', 0, 0),
     ], [
-        ("", 'x50', 0, 0),
-        ("", 'x51', 0, 0),
-        ("", 'x52', 0, 0),
-        ("", 'x53', 0, 0),
-        ("", 'x54', 0, 0),
-        ("", 'x55', 0, 0),
-        ("", 'x56', 0, 0),
-        ("", 'x57', 0, 0),
         # DIAG.D13 = I13+L13 @p65
-        #("MAR_CNTL0", 'mar_cntl', 3, 0),
-        #("MAR_CNTL1", 'mar_cntl', 2, 0),
-        #("MAR_CNTL2", 'mar_cntl', 1, 0),
-        #("MAR_CNTL3", 'mar_cntl', 0, 0),
-        #("CSA_CNTL0", 'csa_cntl', 2, 0),
-        #("CSA_CNTL1", 'csa_cntl', 1, 0),
-        #("CSA_CNTL2", 'csa_cntl', 0, 0),
-        #("CSA_SCAN_OUT", 'csa_scan', 0, 0),
+        ("CSA_SCAN_OUT", 'x50', 0, 0),
+        ("CSA_CNTL2", 'csa_cntl', 0, 0),
+        ("CSA_CNTL1", 'csa_cntl', 1, 0),
+        ("CSA_CNTL0", 'csa_cntl', 2, 0),
+        ("MAR_CNTL3", 'mar_cntl', 0, 0),
+        ("MAR_CNTL2", 'mar_cntl', 1, 0),
+        ("MAR_CNTL1", 'mar_cntl', 2, 0),
+        ("MAR_CNTL0", 'mar_cntl', 3, 0),
     ], [
         ("", 'x60', 0, 0),
         ("", 'x61', 0, 0),
