@@ -61,4 +61,6 @@ class R1kM200UcodeFile():
     def fiu_ucode(self):
         ''' LOAD_CONTROL_STORE_200.FIU '''
         for a in range(0xa400, len(self.ucode), 32):
-            yield self.ucode[a+16:a+16+8]
+            # Strip out IOC bits
+            yield bytes(i & 0xfc for i in self.ucode[a+16:a+16+8])
+            #yield self.ucode[a+16:a+16+8]
