@@ -49,6 +49,7 @@ class SimulateUloadTrace():
                 print(j)
 
     def dispatch_ram_load(self):
+        ''' LOAD_DISPATCH_RAMS_200.SEQ '''
         prefix = " i8052.SEQ.2 DL 9b 02 18 18 00 00 00 00"
         first_suffix = " 00 70 1a 8f 10 9a 8c 18 be 18 59 be 19 58 bc 63 08 bf 42 74"
         first_suffix += " 16 bc 4d 38 bd 95 ff c0 18 be 18 59 be 19 58 54 9a a8 5c 00"
@@ -73,43 +74,49 @@ class SimulateUloadTrace():
                 t = ""
 
     def typ_regfile_load(self):
+        ''' LOAD_REGISTER_FILE_200.TYP '''
         prefix = " i8052.TYP.6 DL d9 00 18 18 00 00 00 00"
         first_suffix = " 00 70 18 8f 10 d8 0c c1 38 74 16 bc 5a bc 34 54 d8 de 5c 00"
         yield from buncher(prefix, first_suffix, self.ucode.typ_regfile())
 
     def val_regfile_load(self):
+        ''' LOAD_REGISTER_FILE_200.VAL '''
         prefix = " i8052.VAL.7 DL d9 00 18 18 00 00 00 00"
         first_suffix = " 00 70 18 8f 10 d8 0c c1 38 74 16 bc 5a bc 34 54 d8 de 5c 00"
         yield from buncher(prefix, first_suffix, self.ucode.val_regfile())
 
     def regfile_load(self):
-        for val, typ in zip(self.val_regfile_load(), self.typ_regfile_load()):
+        ''' alternate TYP and VAL '''
+        for typ, val in zip(self.typ_regfile_load(), self.val_regfile_load()):
             yield typ
             yield val
 
     def ioc_ucode_load(self):
+        ''' LOAD_CONTROL_STORE_200.IOC '''
         prefix = " i8052.IOC.4 DL 38 00 18 18 00 00 00 00"
         first_suffix = " 8f 18 40 8f 19 43 10 d0 18 10 d0 19 11 bc 61 93 02 40 93 02 43 16 5c 00"
         yield from buncher(prefix, first_suffix, self.ucode.ioc_ucode())
 
     def seq_ucode_load(self):
-        # SEQ microcode
+        ''' LOAD_CONTROL_STORE_200.SEQ '''
         prefix = " i8052.SEQ.2 DL 99 00 18 18 00 00 00 00"
         first_suffix = " 00 8f 10 98 70 18 08 bf 41 74 16 bc 4a 54 98 9e 5c 00"
         yield from buncher(prefix, first_suffix, self.ucode.seq_ucode())
 
     def fiu_ucode_load(self):
-        # FIU microcode
+        ''' LOAD_CONTROL_STORE_200.FIU '''
         prefix = " i8052.FIU.3 DL 99 00 18 18 00 00 00 00"
         first_suffix = " 00 8f 10 98 70 18 08 bf 13 74 16 bc 39 54 98 9e 5c 00"
         yield from buncher(prefix, first_suffix, self.ucode.fiu_ucode())
 
     def val_ucode_load(self):
+        ''' LOAD_CONTROL_STORE_200.VAL '''
         prefix = " i8052.VAL.7 DL 99 00 18 18 00 00 00 00"
         first_suffix = " 00 8f 10 98 70 18 08 c1 3b 74 16 bc 4c 54 98 9e 5c 00"
         yield from buncher(prefix, first_suffix, self.ucode.val_ucode())
 
     def typ_ucode_load(self):
+        ''' LOAD_CONTROL_STORE_200.TYP '''
         prefix = " i8052.TYP.6 DL 99 00 18 18 00 00 00 00"
         first_suffix = " 00 8f 10 98 70 18 08 c1 3b 74 16 bc 4c 54 98 9e 5c 00"
         yield from buncher(prefix, first_suffix, self.ucode.typ_ucode())
