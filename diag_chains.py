@@ -8,11 +8,39 @@
 # at time to several serial-to-parallel registers.
 # The structures below have 8 lists, one for each bit in the byte
 # each listing the 8 signals appearing on the parallel outputs.
+#
+# The four field values are:
+#    Name on the drawing
+#    python member name
+#    bit goes at (1 << this_field)
+#    invert bit
+#
+# Fields starting with 'x' are asserted to be zero.
 
 
 #######################################################################
 # The chain for the Decode RAMs is documented at:
 #     [30000958] R1000_SCHEMATIC_SEQ.PDF p56
+#
+# UADR.DEC0 and DEC8 are very hard to tell apart, but I think
+# the current assignment is most probable, because it gives the
+# layout of DECD60 a nice symmetry:
+#
+#		  --------
+#		- 1	20 -
+#		- 2	19 -
+#		- 3	18 -
+#	DEC10	- 4	17 -
+#	DEC7	- 5	16 - DEC11
+#	DEC4	- 6	15 - DEC8
+#	DEC0	- 7	14 - DEC5
+#		- 8	13 - DEC1
+#		- 9	12 -
+#		- 10	11 -
+#		  --------
+#
+# Note that UADR.DEC is only supplies 13 out of the 14 WCS address bits
+#
 
 SEQ_DECODER_SCAN = [
     [
@@ -37,7 +65,7 @@ SEQ_DECODER_SCAN = [
         ("IBUFF_FILL~.DEC", "ibuff_fill", 0, 1),
     ], [
         # DIAG.D2 = DECD62 H17 @p56
-        ("", "x20", 0, 0),
+        ("", "ignore", 0, 0),
         ("", "x21", 1, 0),
         ("", "x22", 2, 0),
         ("CSA_VALID.DEC0", "csa_valid", 2, 0),
@@ -51,10 +79,10 @@ SEQ_DECODER_SCAN = [
         ("MEM_STRT.DEC0", "mem_strt", 2, 0),
         ("MEM_STRT.DEC1", "mem_strt", 1, 0),
         ("MEM_STRT.DEC2", "mem_strt", 0, 0),
-        ("CUR_CLASS0", "cur_class", 3, 0),
-        ("CUR_CLASS1", "cur_class", 2, 0),
-        ("CUR_CLASS2", "cur_class", 1, 0),
-        ("CUR_CLASS3", "cur_class", 0, 0),
+        ("", "ignore", 4, 0),
+        ("", "ignore", 5, 0),
+        ("", "ignore", 6, 0),
+        ("", "ignore", 7, 0),
     ],[
         ("", "x40", 0, 0),
         ("", "x41", 1, 0),
