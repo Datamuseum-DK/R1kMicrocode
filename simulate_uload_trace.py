@@ -56,8 +56,8 @@ class SimulateUloadTrace():
         t = ""
         for n, i in enumerate(self.ucode.dispatch_ram_low()):
             t += "".join(" %02x" % j for j in i)
-            if n % 64 == 63:
-                j = n >> 6
+            if n % 16 == 15:
+                j = n >> 4
                 s = " %02x" % (j >> 4)
                 s += " %02x" % ((j << 4) & 0xff)
                 yield prefix + s + t + first_suffix
@@ -66,8 +66,8 @@ class SimulateUloadTrace():
         prefix = " i8052.SEQ.2 DL 9b 00 18 18 00 00 00 00"
         for n, i in enumerate(self.ucode.dispatch_ram_high()):
             t += "".join(" %02x" % j for j in i)
-            if n % 64 == 63:
-                j = n >> 6
+            if n % 16 == 15:
+                j = n >> 4
                 s = " %02x 00" % (j << 2)
                 yield prefix + s + t + first_suffix
                 first_suffix = ""
@@ -107,7 +107,7 @@ class SimulateUloadTrace():
         ''' LOAD_CONTROL_STORE_200.FIU '''
         prefix = " i8052.FIU.3 DL 99 00 18 18 00 00 00 00"
         first_suffix = " 00 8f 10 98 70 18 08 bf 13 74 16 bc 39 54 98 9e 5c 00"
-        yield from buncher(prefix, first_suffix, self.ucode.fiu_ucode())
+        yield from buncher(prefix, first_suffix, self.ucode.fiu_ucode_raw())
 
     def val_ucode_load(self):
         ''' LOAD_CONTROL_STORE_200.VAL '''
