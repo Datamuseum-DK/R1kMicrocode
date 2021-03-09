@@ -8,21 +8,24 @@ class R1kM200UcodeFile():
 
     ''' A Rational 1000 .M200_UCODE file '''
 
-    def __init__(self, input=None):
-        if input is None:
+    def __init__(self, source=None):
+        if source is None:
             self.ucode = open("M207_54.M200_UCODE", "rb").read()
         else:
-            self.ucode = bytes(input)
+            self.ucode = bytes(source)
+
+    def __len__(self):
+        return (len(self.ucode) - 0xa400) // 32
 
     def dispatch_ram_low(self):
         ''' LOAD_DISPATCH_RAMS_200.SEQ '''
-        for i in range(0x6400, 0x8400, 2):
-            yield self.ucode[i:i+2]
+        for i in range(0x6400, 0x8400, 8):
+            yield self.ucode[i:i+8]
 
     def dispatch_ram_high(self):
         ''' LOAD_DISPATCH_RAMS_200.SEQ '''
-        for i in range(0x8400, 0xa400, 2):
-            yield self.ucode[i:i+2]
+        for i in range(0x8400, 0xa400, 8):
+            yield self.ucode[i:i+8]
 
     def typ_regfile(self):
         ''' LOAD_REGISTER_FILE_200.TYP '''
@@ -37,11 +40,11 @@ class R1kM200UcodeFile():
     def ioc_ucode(self):
         ''' LOAD_CONTROL_STORE_200.IOC '''
         for a in range(0xa400, len(self.ucode), 32):
-            v = 0
+            i = 0
             for c in self.ucode[a+16:a+16+8]:
-                v <<= 2
-                v |= c & 3
-            yield bytes((v >> 8, v & 0xff))
+                i <<= 2
+                i |= c & 3
+            yield bytes((i >> 8, i & 0xff))
 
     def val_ucode(self):
         ''' LOAD_CONTROL_STORE_200.VAL '''
@@ -64,3 +67,8 @@ class R1kM200UcodeFile():
             # Strip out IOC bits
             yield bytes(i & 0xfc for i in self.ucode[a+16:a+16+8])
             #yield self.ucode[a+16:a+16+8]
+
+    def fiu_ucode_raw(self):
+        ''' LOAD_CONTROL_STORE_200.FIU '''
+        for a in range(0xa400, len(self.ucode), 32):
+            yield self.ucode[a+16:a+16+8]
