@@ -25,7 +25,7 @@ def add_to_cache(ins, txt):
     fo.write("0x%x" % ins + '\x01' + txt + '\n')
     fo.close()
 
-def dissassemble(ins):
+def disassemble(ins):
     ''' Disassemble a macro instruction to a text-string '''
     if not pyreveng3_cache:
         read_cache()
