@@ -4,6 +4,29 @@
     ==========================================
 '''
 
+defaults = {
+    "typ_a_adr": 0,		# R1000_SCHEMATIC_TYP p5
+    "typ_b_adr": 0,		# R1000_SCHEMATIC_TYP p5
+    "typ_c_adr": 0x29,		# R1000_SCHEMATIC_TYP p5
+    "typ_frame": 0x1f,		# R1000_SCHEMATIC_TYP p5
+    "typ_c_lit": 0x3,		# R1000_SCHEMATIC_TYP p5
+    "typ_mar_cntl": 0x0,	# R1000_SCHEMATIC_TYP p5
+    "typ_csa_cntl": 0x6,	# R1000_SCHEMATIC_TYP p5
+    "typ_c_mux_sel": 0x1,	# R1000_SCHEMATIC_TYP p5
+    "typ_rand": 0x0,		# R1000_SCHEMATIC_TYP p5
+    "typ_alu_func": 0x1f,	# R1000_SCHEMATIC_TYP p5
+    "typ_priv_check": 0x7,	# R1000_SCHEMATIC_TYP p5
+    "typ_c_source": 0x1,	# R1000_SCHEMATIC_TYP p5
+
+    "val_a_adr": 0,		# R1000_SCHEMATIC_VAL p2
+    "val_b_adr": 0,		# R1000_SCHEMATIC_VAL p2
+    "val_frame": 0x1f,		# R1000_SCHEMATIC_VAL p2
+    "val_c_source": 0x1,	# R1000_SCHEMATIC_VAL p2
+    "val_c_mux_sel": 0x3,	# R1000_SCHEMATIC_VAL p2
+    "val_alu_func": 0x1f,	# R1000_SCHEMATIC_VAL p2
+    "val_rand": 0x0,		# R1000_SCHEMATIC_VAL p2
+}
+
 def seq_br_type(val):
     return {
         0x0: "Branch False",
@@ -107,6 +130,24 @@ def seq_int_reads(val):
         5: "RESOLVE RAM",
         6: "CONTROL TOP",
         7: "CONTROL PRED",
+    }.get(val)
+
+def fiu_length_src(val):
+    return {
+        0: "length_register",
+        1: "length_literal",
+    }.get(val)
+
+def fiu_offset_src(val):
+    return {
+        0: "offset_register",
+        1: "offset_literal",
+    }.get(val)
+
+def fiu_rdata_src(val):
+    return {
+        0: "rotator",
+        1: "mdr",
     }.get(val)
 
 def fiu_tivi_src(val):
@@ -265,6 +306,7 @@ def typval_alu_func(val):
     }.get(val)
 
 def typ_a_adr(val):
+    ''' R1000_SCHEMATIC_TYP p5 '''
     if val == 0x15:
         return "SPARE_0x15"
     if val == 0x16:
@@ -272,9 +314,11 @@ def typ_a_adr(val):
     return typval_a_adr(val)
 
 def typ_b_adr(val):
+    ''' R1000_SCHEMATIC_TYP p5 '''
     return typval_b_adr(val)
 
 def typ_c_adr(val):
+    ''' R1000_SCHEMATIC_TYP p5 '''
     return typval_c_adr(val)
 
 def typ_mar_cntl(val):
@@ -298,6 +342,7 @@ def typ_mar_cntl(val):
     }.get(val)
 
 def typ_csa_cntl(val):
+    ''' R1000_SCHEMATIC_TYP p5 '''
     return {
         0x0: "LOAD_CONTROL_TOP",
         0x1: "START_POP_DOWN",
@@ -310,12 +355,14 @@ def typ_csa_cntl(val):
     }.get(val)
 
 def typ_c_mux_sel(val):
+    ''' R1000_SCHEMATIC_TYP p5 '''
     return {
         0x0: "ALU",
         0x1: "WSR",  # XXX: hard to read on p2
     }.get(val)
 
 def typ_priv_check(val):
+    ''' R1000_SCHEMATIC_TYP p5 '''
     return {
         0x0: "CHECK_BINARY_EQ",
         0x1: "CHECK_BINARY_OP",
@@ -328,6 +375,7 @@ def typ_priv_check(val):
     }.get(val)
 
 def typ_rand(val):
+    ''' R1000_SCHEMATIC_TYP p5 '''
     return {
         0x0: "NO_OP",
         0x1: "INC_LOOP_COUNTER",
@@ -363,6 +411,7 @@ def val_alu_func(val):
     return typval_alu_func(val)
 
 def val_m_a_src(val):
+    ''' R1000_SCHEMATIC_VAL p2 '''
     return {
         0: "Bits 0…15",
         1: "Bits 16…31",
@@ -374,6 +423,7 @@ def val_m_b_src(val):
     return val_m_a_src(val)
 
 def val_rand(val):
+    ''' R1000_SCHEMATIC_VAL p2 '''
     return {
         0x0: "NO_OP",
         0x1: "INC_LOOP_COUNTER",
@@ -393,10 +443,93 @@ def val_rand(val):
         0xf: "SPARE_0xf",
     }.get(val)
 
+def val_c_source(val):
+    ''' R1000_SCHEMATIC_VAL p2 '''
+    return {
+        0: "FIU_BUS",
+        1: "MUX",
+    }.get(val)
+
 def val_c_mux_sel(val):
     return {
         0: "ALU << 1",
         1: "ALU >> 16",
         2: "ALU",
         3: "WSR",  # XXX: hard to read on p2
+    }.get(val)
+
+def ioc_random(val):
+    ''' R1000_SCHEMATIC_IOC.PDF p5 '''
+    return {
+	0x00: "noop",
+	0x01: "load transfer address",
+	0x02: "spare 2",
+	0x03: "spare 3",
+	0x04: "write request queue tail",
+	0x05: "read response queue queue head",
+	0x06: "load slice timer",
+	0x07: "load delay timer",
+	0x08: "read and clear rtc",
+	0x09: "read timer/checkbits/errorid",
+	0x0a: "clear slice event",
+	0x0b: "clear delay event",
+	0x0c: "enable slice timer",
+	0x0d: "disable slice timer",
+	0x0e: "enable delay timer",
+	0x0f: "disable delay timer",
+	0x10: "load checkbit register",
+	0x11: "disable ecc event",
+	0x12: "exit function pop below tcb event enable",
+	0x13: "set cpu running",
+	0x14: "clear cpu running",
+	0x15: "clear transfer parity error",
+	0x16: "stage data register",
+	0x17: "force type bus receivers",
+	0x18: "drive diagnostic checkbits",
+	0x19: "ecc bench testing random",
+	0x1a: "spare 1a",
+	0x1b: "spare 1b",
+	0x1c: "read ioc memory and increment address",
+	0x1d: "read ioc memory",
+	0x1e: "write ioc memory and increment address",
+	0x1f: "write ioc memory",
+    }.get(val)
+
+def ioc_adrbs(val):
+    ''' R1000_SCHEMATIC_IOC.PDF p5 '''
+    return {
+        0x0: "fiu",
+        0x1: "val",
+        0x2: "typ",
+        0x3: "seq",
+    }.get(val)
+
+def ioc_fiubs(val):
+    ''' R1000_SCHEMATIC_IOC.PDF p5 '''
+    return {
+        0x0: "fiu",
+        0x1: "val",
+        0x2: "typ",
+        0x3: "seq",
+    }.get(val)
+
+def ioc_tvbs(val):
+    ''' R1000_SCHEMATIC_IOC.PDF p5 '''
+    return {
+        0x0: "typ/val",
+        0x1: "typ/fiu",
+        0x2: "fiu/val",
+        0x3: "fiu/fiu",
+        0x4: "ioc/ioc",
+        0x5: "seq/seq",
+        0x6: "reserved 6",
+        0x7: "reserved 7",
+        0x8: "typ/mem",
+        0x9: "typ/mem",
+        0xa: "fiu/mem",
+        0xb: "fiu/mem",
+        0xc: "rdr",
+        0xd: "rdr",
+        0xe: "rdr",
+        0xf: "rdr",
     }.get(val)

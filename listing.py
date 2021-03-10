@@ -40,6 +40,11 @@ class Listing():
             for x, y, z in explainer.decode(uins, uprog.attrs):
                 if z is None:
                     z = ""
-                print("    ", x.ljust(19), y.rjust(4), z)
+                d = r1k_explain.defaults.get(x)
+                if d == getattr(uins, x):
+                    y += "*"
+                else:
+                    y += " "
+                print("    ", x.ljust(19), y.rjust(5), z)
     
 Listing()
