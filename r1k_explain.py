@@ -20,6 +20,7 @@ defaults = {
 
     "val_a_adr": 0,		# R1000_SCHEMATIC_VAL p2
     "val_b_adr": 0,		# R1000_SCHEMATIC_VAL p2
+    "val_c_adr": 0x29,		# R1000_SCHEMATIC_VAL p2
     "val_frame": 0x1f,		# R1000_SCHEMATIC_VAL p2
     "val_c_source": 0x1,	# R1000_SCHEMATIC_VAL p2
     "val_c_mux_sel": 0x3,	# R1000_SCHEMATIC_VAL p2
@@ -27,7 +28,46 @@ defaults = {
     "val_rand": 0x0,		# R1000_SCHEMATIC_VAL p2
 }
 
+#######################################################################
+# DISPATCH
+#######################################################################
+
+def dispatch_mem_strt(val):
+    ''' R1000_SCHEMATIC_SEQ p18 '''
+    return {
+        0x0: "CONTROL READ, AT CONTROL PRED",
+        0x1: "CONTROL READ, AT LEX LEVEL DELTA",
+        0x2: "CONTROL READ, AT (INNER - PARAMS)",
+        0x3: "TYPE READ, AT TOS PLUS FIELD NUMBER",
+        0x4: "MEMORY NOT STARTED",
+        0x5: "PROGRAM READ, AT MACRO PC PLUS OFFSET",
+        0x6: "CONTROL READ, AT VALUE_ITEM.NAME PLUS FIELD NUMBER",
+        0x7: "TYPE READ, AT TOS TYPE LINK",
+    }.get(val)
+
+#######################################################################
+# SEQ
+#######################################################################
+
+def xxxseq_random(val):
+    ''' R1000_SCHEMATIC_SEQ p84 vs p102 '''
+    return {
+    }.get(val)
+
+def seq_b_timing(val):
+    '''
+       R1000_SCHEMATIC_SEQ p68
+       R1000_HARDWARE_FUNCTIONAL_SPECIFICATION p56
+    '''
+    return {
+        0x0: "Early Condition",
+        0x1: "Latch Condition",
+        0x2: "Late Condition, Hint True (or unconditional branch)",
+        0x3: "Late Condition, Hint False",
+    }.get(val)
+ 
 def seq_br_type(val):
+    ''' R1000_SCHEMATIC_SEQ p68 '''
     return {
         0x0: "Branch False",
         0x1: "Branch True",
@@ -132,25 +172,61 @@ def seq_int_reads(val):
         7: "CONTROL PRED",
     }.get(val)
 
+#######################################################################
+# FIU
+#######################################################################
+
+def fiu_load_oreg(val):
+    ''' R1000_SCHEMATIC_FIU p8 '''
+    return {
+        0: "load_oreg",
+        1: "hold_oreg",
+    }.get(val)
+
+def fiu_load_var(val):
+    ''' R1000_SCHEMATIC_FIU p8 '''
+    return {
+        0: "load_var",
+        1: "hold_var",
+    }.get(val)
+
+def fiu_load_tar(val):
+    ''' R1000_SCHEMATIC_FIU p8 '''
+    return {
+        0: "load_tar",
+        1: "hold_tar",
+    }.get(val)
+
+def fiu_load_mdr(val):
+    ''' R1000_SCHEMATIC_FIU p8 '''
+    return {
+        0: "load_mdr",
+        1: "hold_mdr",
+    }.get(val)
+
 def fiu_length_src(val):
+    ''' R1000_SCHEMATIC_FIU p9 '''
     return {
         0: "length_register",
         1: "length_literal",
     }.get(val)
 
 def fiu_offset_src(val):
+    ''' R1000_SCHEMATIC_FIU p9 '''
     return {
         0: "offset_register",
         1: "offset_literal",
     }.get(val)
 
 def fiu_rdata_src(val):
+    ''' R1000_SCHEMATIC_FIU p9 '''
     return {
         0: "rotator",
         1: "mdr",
     }.get(val)
 
 def fiu_tivi_src(val):
+    ''' R1000_SCHEMATIC_FIU p8 '''
     return {
         0x0: "tar_var",
         0x1: "tar_val",
@@ -171,6 +247,7 @@ def fiu_tivi_src(val):
     }.get(val)
 
 def fiu_mem_start(val):
+    ''' R1000_SCHEMATIC_FIU p9 '''
     return {
     0x00: "hold0",
     0x01: "hold1",
@@ -206,12 +283,53 @@ def fiu_mem_start(val):
     0x1f: "reserved_0x1f",
     }.get(val)
 
-def fiu_lfl(val):
+def fiu_len_fill_lit(val):
+    ''' R1000_SCHEMATIC_FIU p8 '''
     if val & 0x40:
         return "zero-fill 0x%x" % (val & 0x3f)
     return "sign-fill 0x%x" % (val & 0x3f)
 
+def fiu_len_fill_reg_ctl(val):
+    ''' R1000_HARDWARE_FUNCTIONAL_SPECIFICATION p125 '''
+    return {
+        0x0: "Load VI (25:31)  Load TI (36)",
+        0x1: "Load Literal     Load Literal",
+        0x2: "Load TI (37:42)  Load TI (36)",
+        0x3: "no load          no load",
+    }.get(val)
+
+def fiu_op_sel(val):
+    ''' R1000_HARDWARE_FUNCTIONAL_SPECIFICATION p126 '''
+    return {
+        0x0: "extract",
+        0x1: "insert last",
+        0x2: "insert first",
+        0x3: "insert",
+    }.get(val)
+
+def fiu_oreg_src(val):
+    ''' R1000_HARDWARE_FUNCTIONAL_SPECIFICATION p126 '''
+    return {
+        0x0: "rotator output",
+        0x1: "merge data register",
+    }.get(val)
+
+def fiu_vmux_sel(val):
+    ''' R1000_HARDWARE_FUNCTIONAL_SPECIFICATION p127 '''
+    return {
+        0x0: "merge data register",
+        0x1: "fill value",
+        0x2: "VI",
+        0x3: "FIU BUS",
+    }.get(val)
+
+
+#######################################################################
+# TYP&VAL
+#######################################################################
+
 def typval_a_adr(val):
+    ''' R1000_SCHEMATIC_TYP p5,  R1000_SCHEMATIC_VAL p2 '''
     if val < 0x10:
         return "GP 0x%x" % val
     if val == 0x10:
@@ -224,10 +342,6 @@ def typval_a_adr(val):
         return "LOOP_REG"
     if val == 0x14:
         return "ZEROS"
-    if val == 0x15:
-        return "ZERO_COUNTER"  # TYP: SPARE
-    if val == 0x16:
-        return "PRODUCT"  # TYP: SPARE
     if val == 0x17:
         return "LOOP_COUNTER"
     if val < 0x20:
@@ -235,6 +349,7 @@ def typval_a_adr(val):
     return "FRAME:REG0x%x" % (val - 0x20)
 
 def typval_b_adr(val):
+    ''' R1000_SCHEMATIC_TYP p5,  R1000_SCHEMATIC_VAL p2 '''
     if val == 0x14:
         return "BOT - 1"
     if val == 0x15:
@@ -246,26 +361,26 @@ def typval_b_adr(val):
     return typval_a_adr(val)
 
 def typval_c_adr(val):
-    # XXX: Looks bogus!
+    ''' R1000_SCHEMATIC_TYP p5,  R1000_SCHEMATIC_VAL p2 '''
+    if val >= 0x30:
+        return "GP 0x%x" % (0x3f - val)
     if val < 0x20:
         return "FRAME:REG??" # XXX: "inversion of C field of uword
-    if val < 0x40:
-        return "GP 0x%x" % (0x3f - val)
-    if val < 0x2f:
+    if val == 0x2f:
         return "TOP"
-    if val < 0x2e:
+    if val == 0x2e:
         return "TOP + 1"
-    if val < 0x2d:
+    if val == 0x2d:
         return "SPARE_0x2d"
-    if val < 0x2c:
+    if val == 0x2c:
         return "LOOP_REG"
-    if val < 0x2b:
+    if val == 0x2b:
         return "BOT - 1"
-    if val < 0x2a:
+    if val == 0x2a:
         return "BOT"
-    if val < 0x29:
+    if val == 0x29:
         return "WRITE_DISABLE (default)"
-    if val < 0x28:
+    if val == 0x28:
         return "LOOP_COUNTER"
     return "TOP - %d" % (val - 0x1f)
 
@@ -331,6 +446,8 @@ def typ_mar_cntl(val):
         0x5: "RESTORE_MAR_REFRESH",
         0x6: "INCREMENT_MAR",
         0x7: "INCREMENT_MAR_IF_INCOMPLETE",
+
+        # XXX: R1000_SCHEMATIC_FIU p53 has opposite order
         0x8: "LOAD_MAR_SYSTEM",
         0x9: "LOAD_MAR_CODE",
         0xa: "LOAD_MAR_IMPORT",
@@ -398,13 +515,24 @@ def typ_rand(val):
 def typ_alu_func(val):
     return typval_alu_func(val)
 
+#######################################################################
+# VAL
+#######################################################################
+
 def val_a_adr(val):
+    ''' R1000_SCHEMATIC_VAL p2 '''
+    if val == 0x15:
+        return "ZERO_COUNTER"
+    if val == 0x16:
+        return "PRODUCT"
     return typval_a_adr(val)
 
 def val_b_adr(val):
+    ''' R1000_SCHEMATIC_VAL p2 '''
     return typval_b_adr(val)
 
 def val_c_adr(val):
+    ''' R1000_SCHEMATIC_VAL p2 '''
     return typval_c_adr(val)
 
 def val_alu_func(val):
@@ -458,6 +586,10 @@ def val_c_mux_sel(val):
         3: "WSR",  # XXX: hard to read on p2
     }.get(val)
 
+#######################################################################
+# IOC
+#######################################################################
+
 def ioc_random(val):
     ''' R1000_SCHEMATIC_IOC.PDF p5 '''
     return {
@@ -505,7 +637,10 @@ def ioc_adrbs(val):
     }.get(val)
 
 def ioc_fiubs(val):
-    ''' R1000_SCHEMATIC_IOC.PDF p5 '''
+    '''
+        R1000_SCHEMATIC_IOC.PDF p5
+        R1000_HARDWARE_FUNCTIONAL_SPECIFICATION p127
+    '''
     return {
         0x0: "fiu",
         0x1: "val",
@@ -514,7 +649,10 @@ def ioc_fiubs(val):
     }.get(val)
 
 def ioc_tvbs(val):
-    ''' R1000_SCHEMATIC_IOC.PDF p5 '''
+    '''
+        R1000_SCHEMATIC_IOC.PDF p5
+        R1000_HARDWARE_FUNCTIONAL_SPECIFICATION p127
+    '''
     return {
         0x0: "typ/val",
         0x1: "typ/fiu",

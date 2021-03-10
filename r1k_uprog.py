@@ -105,7 +105,7 @@ class Uprog():
                 for spec in bitspecs:
                     if spec[1] == 'ignore':
                         continue
-                    if octet & spec[4]:
+                    if octet & spec[4] and spec[1] != "cur_class":
                         par ^= 1
                     if (spec[3] ^ octet) & spec[4]:
                         assert spec[1][0] != 'x', (octet, spec)
